@@ -1,0 +1,12 @@
+/node_modules
+
+# docker releted files
+.dockerignore
+docker-compose.yaml
+Dockerfile
+
+# enviorment veriable
+.env
+
+# others files
+.vscode

@@ -1,0 +1,15 @@
+services:
+  downTimeMonitor:
+    build:
+      context: .
+    container_name: DownTimeMonitor-Server
+    ports:
+      - 6100:6100
+    networks:
+      - downTime-network
+    env_file:
+      - .env
+
+networks:
+  downTime-network:
+    driver: bridge
