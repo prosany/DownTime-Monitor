@@ -58,6 +58,20 @@ const userSchema = new Schema(
         ispOrganization: '',
       },
     },
+    plan: {
+      type: String,
+      default: 'free',
+      enum: ['free', 'premium'],
+    },
+    planExpires: {
+      type: Date,
+      // in 3 days
+      default: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+    },
+    eventCreateLimit: {
+      type: Number,
+      default: 2,
+    },
   },
   { timestamps: true }
 );

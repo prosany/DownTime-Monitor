@@ -1,10 +1,12 @@
 const { connect, connection } = require('mongoose');
 const { configs } = require('@configs');
+const { startMonitoring } = require('@libs/queryHelper');
 
 connect(configs.DB_URL);
 
 connection.on('connected', () => {
   console.log('Connected to Database');
+  startMonitoring();
 });
 
 connection.on('error', (err) => {
