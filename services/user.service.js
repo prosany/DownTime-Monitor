@@ -86,17 +86,13 @@ exports.handleRegister = async (body, req, nextFunc) => {
     eventCreateLimit: hasPremiumAccess ? 100000 : 5,
   });
 
-  // Save user
-  const savedUser = await draftUser.save();
-
-  const otpCode = await createOtp(6);
+  const [savedUser, otpCode] = await Promise.all([
+    draftUser.save(),
+    createOtp(6),
+  ]);
 
   // Send email verification
-  await sendEmail(
-    savedUser.email,
-    'Verify Your Account',
-    `Your OTP is: ${otpCode}`
-  );
+  sendEmail(savedUser.email, 'Verify Your Account', `Your OTP is: ${otpCode}`);
 
   return savedUser;
 };
