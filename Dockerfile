@@ -20,10 +20,6 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 COPY ecosystem.config.js .
 
-RUN addgroup -S node && adduser -S node -G node
-RUN chown -R node:node /app
-USER node
-
 EXPOSE 6100
 
 # Install PM2 globally
