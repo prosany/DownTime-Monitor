@@ -59,6 +59,8 @@ exports.handleRegister = async (body, req, nextFunc) => {
 
   // Hash password
   const hashedPassword = await bcrypt.hash(body.password, 10);
+
+  const hasPremiumAccess = body.email.endsWith('@programming-hero.com');
   // Create user
   const draftUser = new User({
     fullName: body.fullName,
@@ -76,6 +78,11 @@ exports.handleRegister = async (body, req, nextFunc) => {
       time_zone: ipLook?.timezone,
       ispOrganization: ipLook?.org,
     },
+    plan: hasPremiumAccess ? 'premium' : 'free',
+    planExpires: hasPremiumAccess
+      ? new Date(new Date().setFullYear(new Date().getFullYear() + 30))
+      : new Date(new Date().setDate(new Date().getDate() + 3)),
+    eventCreateLimit: hasPremiumAccess ? 100000 : 5,
   });
 
   // Save user
@@ -119,7 +126,7 @@ exports.handleVerifyUser = async (token, nextFunc) => {
     authToken: token,
   });
 
-  if (!user) return next(createError(401, message('invalidCredentials')));
+  if (!user) return nextFunc(createError(401, message('invalidCredentials')));
 
   return user;
 };
