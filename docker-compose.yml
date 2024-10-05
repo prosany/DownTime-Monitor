@@ -1,7 +1,5 @@
-version: '3.8'
-
 services:
-  downTimeMonitor:
+  downTimemonitor:
     build:
       context: .
     container_name: downtime-monitoring-backend
