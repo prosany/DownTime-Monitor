@@ -5,6 +5,7 @@ const {
   handleRegister,
   handleUpdateUser,
   handleVerifyUser,
+  handleGetUserById,
 } = require('@services/user.service');
 
 exports.login = async (req, res, next) => {
@@ -72,5 +73,19 @@ exports.verifyUser = async (req, res, next) => {
     });
   } catch (error) {
     return next(createError(500, message('internalServerError')));
+  }
+};
+
+exports.getUserById = async (req, res, next) => {
+  try {
+    const user = await handleGetUserById(req.params.id, next);
+
+    res.status(200).send({
+      status: true,
+      message: 'User fetched successfully',
+      user,
+    });
+  } catch (error) {
+    next(createError(500, message('internalServerError')));
   }
 };

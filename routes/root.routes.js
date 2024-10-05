@@ -1,29 +1,24 @@
 const router = require('express').Router();
 const userRoutes = require('@routes/user.routes');
 const eventRoutes = require('@routes/event.routes');
+const logRoutes = require('@routes/log.routes');
 const { detector } = require('@utils/common');
-const { sendEmail } = require('@libs/mailTransporter');
 
 router.use('/auth', userRoutes);
 router.use('/event', eventRoutes);
+router.use('/log', logRoutes);
 
 router.get('/', async (req, res, next) => {
-  const email = 'sunnytalukder19.bd@gmail.com';
-  const subject = 'API Down Alert! 🚨';
-  const body = '<h1>This is a test email</h1>';
-
-  const emailSent = await sendEmail(email, subject, body);
-
-  if (emailSent) {
-    console.log('Email Sent');
-  } else {
-    console.log('Email Not Sent');
-  }
-  const device = detector(req.headers['user-agent']);
+  const device = await detector(req.headers['user-agent']);
   res.status(200).send({
     status: true,
     message: '🎉 Congratulations! Your Server Works Perfectly! 🎉',
-    device,
+    device: {
+      type: device?.device?.type || 'N/A',
+      brand: device?.device?.brand || 'N/A',
+      operatingSystem: device?.os?.name || 'N/A',
+      browser: device?.client?.name || 'N/A',
+    },
   });
 });
 

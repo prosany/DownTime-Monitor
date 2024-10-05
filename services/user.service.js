@@ -123,3 +123,11 @@ exports.handleVerifyUser = async (token, nextFunc) => {
 
   return user;
 };
+
+exports.handleGetUserById = async (id, nextFunc) => {
+  // Check if user exists
+  const user = await User.findById(id);
+  if (!user) return nextFunc(createError(404, message('invalidCredentials')));
+
+  return user;
+};

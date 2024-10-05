@@ -1,29 +1,75 @@
 const axios = require('axios');
 const Events = require('@models/event.model');
+const Logs = require('@models/log.model');
 const { intervalCorns } = require('@utils/common');
 const schedule = require('node-schedule');
 const { sendEmail } = require('@libs/mailTransporter');
 const createError = require('http-errors');
 const { message } = require('@utils/common');
 const { sendWebhook } = require('@libs/webhookTransporter');
+
 const scheduledEvents = new Set(); // Track scheduled events
 
 exports.startQuery = async (event) => {
+  const startTime = new Date();
   try {
-    const { queryUrl, queryMethod, queryHeaders, queryBody, name } = event;
+    const { queryUrl, queryMethod, queryHeaders, queryBody } = event;
     const response = await axios({
       method: queryMethod,
       url: queryUrl,
       headers: queryHeaders,
       data: queryBody,
     });
-    console.log(`✅ Queue processed - ${event.name}: ${response.data}`);
+
+    const endTime = new Date();
+
+    // Save logs
+    const newLog = new Logs({
+      eventId: event._id,
+      logType: 'success',
+      logTime: new Date(),
+      logData: {
+        statusCode: response?.status,
+        statusText: response?.statusText,
+        method: response?.config?.method,
+        url: queryUrl,
+        headers: response?.headers,
+        data: response?.data,
+      },
+      responseTime: `Status Code: ${response?.status} in ${
+        endTime - startTime
+      }ms`,
+    });
+    await newLog.save();
+
+    // console.log(`✅ Queue processed - ${event.name}: ${response.data}`);
 
     event.lastRun = new Date();
     event.lastError = '';
     await event.save();
   } catch (error) {
-    console.error(`🚨 ${event.name} Request Error: ${error.message}`);
+    const endTime = new Date();
+    // Save logs
+    const newLog = new Logs({
+      eventId: event._id,
+      logType: 'error',
+      logTime: new Date(),
+      logData: {
+        statusCode: error?.response?.status,
+        statusText: error?.response?.statusText,
+        method: error?.response?.config?.method,
+        url: error?.config?.url,
+        headers: error?.response?.headers,
+        data: error?.message,
+      },
+      responseTime: `Status Code: ${error?.response?.status} in ${
+        endTime - startTime
+      }ms`,
+    });
+
+    await newLog.save();
+
+    // console.error(`🚨 ${event.name} Request Error: ${error.message}`);
 
     const lastNotified = new Date(event.lastNotified);
     const currentTime = new Date();
@@ -34,40 +80,16 @@ exports.startQuery = async (event) => {
     if (!event.lastNotified || diffInMinutes >= 30) {
       // Send notification on error
       const { notificationEmail } = event;
-      const subject = 'API Down Alert! 🚨';
+      const subject = `API Down - ${event.name} 🚨`;
       const body = `The API "${event.name}" is down. The error message is: ${error.message}`;
 
       if (event.notifiedBy === 'webhook') {
-        try {
-          await sendWebhook(
-            event.notificationWebhook,
-            event.name,
-            error.message
-          );
-        } catch (error) {
-          console.error('Failed to send webhook notification:', error.message);
-        }
+        await sendWebhook(event.notificationWebhook, event.name, error.message);
       } else if (event.notifiedBy === 'email') {
-        try {
-          await sendEmail(notificationEmail, subject, body);
-        } catch (error) {
-          console.error('Failed to send email notification:', error.message);
-        }
+        await sendEmail(notificationEmail, subject, body);
       } else if (event.notifiedBy === 'both') {
-        try {
-          await sendEmail(notificationEmail, subject, body);
-        } catch (error) {
-          console.error('Failed to send email notification:', error.message);
-        }
-        try {
-          await sendWebhook(
-            event.notificationWebhook,
-            event.name,
-            error.message
-          );
-        } catch (error) {
-          console.error('Failed to send webhook notification:', error.message);
-        }
+        await sendEmail(notificationEmail, subject, body);
+        await sendWebhook(event.notificationWebhook, event.name, error.message);
       }
 
       event.lastRun = new Date();
@@ -75,7 +97,7 @@ exports.startQuery = async (event) => {
       event.lastNotified = new Date();
       await event.save();
     } else {
-      console.log('Notification already sent. Skipping...');
+      console.log('Notification already sent. Skipping for 30min...');
     }
   }
 };
@@ -95,9 +117,9 @@ exports.startMonitoring = async () => {
             console.error(`Error during monitoring for ${event.name}:`, error);
           }
         });
-        console.log(
-          `🚀 In Queue - ${event.name} runs on every ${event.runInterval}`
-        );
+        // console.log(
+        //   `🚀 In Queue - ${event.name} runs on every ${event.runInterval}`
+        // );
       }
     }
   };
