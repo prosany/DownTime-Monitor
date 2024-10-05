@@ -94,7 +94,8 @@ exports.handleRegister = async (body, req, nextFunc) => {
   // Send email verification
   await sendEmail(
     savedUser.email,
-    'Verify Your Account!'`Your OTP is: ${otpCode}`
+    'Verify Your Account',
+    `Your OTP is: ${otpCode}`
   );
 
   return savedUser;
