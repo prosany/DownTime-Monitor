@@ -1,8 +1,9 @@
 const createError = require('http-errors');
 const bcrypt = require('bcrypt');
 const User = require('@models/user.model');
-const { message, detector, ipLookUp } = require('@utils/common');
+const { message, detector, ipLookUp, createOtp } = require('@utils/common');
 const { generateToken } = require('@utils/jwt-helper');
+const { sendEmail } = require('@libs/mailTransporter');
 
 exports.handleLogin = async (body, nextFunc) => {
   // Check if user exists
@@ -87,6 +88,14 @@ exports.handleRegister = async (body, req, nextFunc) => {
 
   // Save user
   const savedUser = await draftUser.save();
+
+  const otpCode = await createOtp(6);
+
+  // Send email verification
+  await sendEmail(
+    savedUser.email,
+    'Verify Your Account!'`Your OTP is: ${otpCode}`
+  );
 
   return savedUser;
 };
