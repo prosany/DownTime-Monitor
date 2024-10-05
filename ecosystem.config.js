@@ -3,8 +3,11 @@ module.exports = {
     {
       name: 'downtime-monitoring-backend',
       script: './app.js',
-      instances: 'max',
-      exec_mode: 'cluster',
+      instances: 1,
+      exec_mode: 'fork',
+      watch: true,
+      autorestart: true,
+      max_memory_restart: '500M',
       env: {
         NODE_ENV: 'development',
       },
