@@ -1,10 +1,12 @@
+version: '3.8'
+
 services:
   downTimeMonitor:
     build:
       context: .
-    container_name: DownTimeMonitor-Server
+    container_name: downtime-monitoring-backend
     ports:
-      - 6100:6100
+      - "6100:6100"
     networks:
       - downTime-network
     env_file:

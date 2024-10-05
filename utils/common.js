@@ -12,7 +12,9 @@ exports.message = (msg) => {
     accountExists: 'Wrong Account Information / Account Exists',
     accountBlocked: 'Your account has been blocked by the administrator',
     accountNotVerified: 'Your account has not been verified',
-    unauthorized: 'Unauthorized Access',
+    unauthorized: 'You are not authorized to access this resource',
+    invalidData: "You've entered invalid event data",
+    eventLimitExceeded: 'You have exceeded the 5 event creation limit',
   };
 
   return messages[msg] || 'An error occurred';

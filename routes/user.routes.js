@@ -11,7 +11,7 @@ router.post('/login', login);
 
 router.post('/register', register);
 
-router.patch('/update', updateUser);
+router.patch('/update', verifyToken, updateUser);
 
 router.get('/verify-user', verifyToken, verifyUser);
 

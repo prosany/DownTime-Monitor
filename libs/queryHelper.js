@@ -10,20 +10,20 @@ const scheduledEvents = new Set(); // Track scheduled events
 
 exports.startQuery = async (event) => {
   try {
-    const { queryUrl, queryMethod, queryHeaders, queryBody } = event;
+    const { queryUrl, queryMethod, queryHeaders, queryBody, name } = event;
     const response = await axios({
       method: queryMethod,
       url: queryUrl,
       headers: queryHeaders,
       data: queryBody,
     });
-    console.log(`API called successfully: ${response.data}`);
+    console.log(`✅ Queue processed - ${event.name}: ${response.data}`);
 
     event.lastRun = new Date();
     event.lastError = '';
     await event.save();
   } catch (error) {
-    console.error(`Error calling API: ${error.message}`);
+    console.error(`🚨 ${event.name} Request Error: ${error.message}`);
 
     const lastNotified = new Date(event.lastNotified);
     const currentTime = new Date();
@@ -33,33 +33,47 @@ exports.startQuery = async (event) => {
     // Check if notification needs to be sent
     if (!event.lastNotified || diffInMinutes >= 30) {
       // Send notification on error
-      if (event.notifiedBy === 'email' || event.notifiedBy === 'both') {
-        // Send email notification
-        console.log('Sending email notification...');
-        const { notificationEmail } = event;
-        const subject = 'API Down Alert! 🚨';
-        const body = `The API "${event.name}" is down. The error message is: ${error.message}`;
+      const { notificationEmail } = event;
+      const subject = 'API Down Alert! 🚨';
+      const body = `The API "${event.name}" is down. The error message is: ${error.message}`;
 
+      if (event.notifiedBy === 'webhook') {
         try {
-          // Send email
-          await sendEmail(notificationEmail, subject, body);
           await sendWebhook(
             event.notificationWebhook,
             event.name,
             error.message
           );
-          event.lastError = error.message;
-          event.lastNotified = new Date();
-          await event.save();
-
-          console.log('Email notification sent successfully.');
-        } catch (emailError) {
-          console.error(
-            'Failed to send email notification:',
-            emailError.message
+        } catch (error) {
+          console.error('Failed to send webhook notification:', error.message);
+        }
+      } else if (event.notifiedBy === 'email') {
+        try {
+          await sendEmail(notificationEmail, subject, body);
+        } catch (error) {
+          console.error('Failed to send email notification:', error.message);
+        }
+      } else if (event.notifiedBy === 'both') {
+        try {
+          await sendEmail(notificationEmail, subject, body);
+        } catch (error) {
+          console.error('Failed to send email notification:', error.message);
+        }
+        try {
+          await sendWebhook(
+            event.notificationWebhook,
+            event.name,
+            error.message
           );
+        } catch (error) {
+          console.error('Failed to send webhook notification:', error.message);
         }
       }
+
+      event.lastRun = new Date();
+      event.lastError = error.message;
+      event.lastNotified = new Date();
+      await event.save();
     } else {
       console.log('Notification already sent. Skipping...');
     }
@@ -67,8 +81,6 @@ exports.startQuery = async (event) => {
 };
 
 exports.startMonitoring = async () => {
-  console.log('Starting monitoring...');
-
   // Function to schedule a single event
   const scheduleEvent = async (event) => {
     if (!scheduledEvents.has(event._id)) {
@@ -79,15 +91,12 @@ exports.startMonitoring = async () => {
         schedule.scheduleJob(interval, async () => {
           try {
             await exports.startQuery(event);
-            console.log(
-              `Running monitoring for ${event.name} every ${event.runInterval}`
-            );
           } catch (error) {
             console.error(`Error during monitoring for ${event.name}:`, error);
           }
         });
         console.log(
-          `Scheduled job for ${event.name} every ${event.runInterval}`
+          `🚀 In Queue - ${event.name} runs on every ${event.runInterval}`
         );
       }
     }

@@ -6,15 +6,16 @@ const {
   updateEvent,
   deleteEvent,
 } = require('@controllers/event.controllers');
+const { verifyToken } = require('@utils/jwt-helper');
 
-router.post('/create-event', createEvent);
+router.post('/create-event', verifyToken, createEvent);
 
-router.get('/list-event', getEvents);
+router.get('/list-event', verifyToken, getEvents);
 
-router.get('/get-event/:id', getEvent);
+router.get('/get-event/:id', verifyToken, getEvent);
 
-router.patch('/update-event/:id', updateEvent);
+router.patch('/update-event/:id', verifyToken, updateEvent);
 
-router.patch('/delete-event/:id', deleteEvent);
+router.patch('/delete-event/:id', verifyToken, deleteEvent);
 
 module.exports = router;

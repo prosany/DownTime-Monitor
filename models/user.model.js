@@ -70,7 +70,7 @@ const userSchema = new Schema(
     },
     eventCreateLimit: {
       type: Number,
-      default: 2,
+      default: 5,
     },
   },
   { timestamps: true }

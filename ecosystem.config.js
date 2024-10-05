@@ -1,8 +1,8 @@
 module.exports = {
   apps: [
     {
-      name: 'helpdesk-backend',
-      script: './dist/index.js',
+      name: 'downtime-monitoring-backend',
+      script: './app.js',
       instances: 'max',
       exec_mode: 'cluster',
       env: {
