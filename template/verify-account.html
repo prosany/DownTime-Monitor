@@ -5,25 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
-      rel="stylesheet"
-    />
     <title>Verify Account</title>
     <style>
+      @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
-        body {
-          font-family: 'Nunito', Arial, sans-serif;
-        }
+        font-family: 'Nunito', Arial, sans-serif;
       }
 
       body {
-        body {
-          font-family: 'Nunito', Arial, sans-serif;
-        }
+        font-family: 'Nunito', Arial, sans-serif;
         background-color: #fffaf7;
         width: 100%;
       }
@@ -43,7 +37,7 @@
         font-size: 0.8rem;
       }
 
-      .header > svg {
+      .header > img {
         width: 35px;
         height: 35px;
       }
@@ -96,21 +90,10 @@
   <body>
     <div class="container">
       <div class="header">
-        <svg
-          data-slot="icon"
-          fill="none"
-          stroke-width="1.5"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-hidden="true"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M15.042 21.672 13.684 16.6m0 0-2.51 2.225.569-9.47 5.227 7.917-3.286-.672Zm-7.518-.267A8.25 8.25 0 1 1 20.25 10.5M8.288 14.212A5.25 5.25 0 1 1 17.25 10.5"
-          ></path>
-        </svg>
+        <img
+          src="data:image/png;base64,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"
+          alt="Logo"
+        />
         <h1>DownTime Monitor</h1>
       </div>
       <p class="description">
