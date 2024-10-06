@@ -103,7 +103,7 @@ exports.handleRegister = async (body, req, nextFunc) => {
   sendEmail(
     savedUser.email,
     'Verify your DownTimeMonitor account',
-    { name: savedUser.fullName, otp: otpCode },
+    { name: savedUser.fullName, otp: otpCode, year: new Date().getFullYear() },
     'verify-account'
   );
 
