@@ -1,6 +1,7 @@
 const createError = require('http-errors');
 const bcrypt = require('bcrypt');
 const User = require('@models/user.model');
+const Otp = require('@models/otp.model');
 const { message, detector, ipLookUp, createOtp } = require('@utils/common');
 const { generateToken } = require('@utils/jwt-helper');
 const { sendEmail } = require('@libs/mailTransporter');
@@ -91,8 +92,20 @@ exports.handleRegister = async (body, req, nextFunc) => {
     createOtp(6),
   ]);
 
+  const draftOtp = new Otp({
+    userId: savedUser._id,
+    otp: otpCode,
+  });
+
+  draftOtp.save();
+
   // Send email verification
-  sendEmail(savedUser.email, 'Verify Your Account', `Your OTP is: ${otpCode}`);
+  sendEmail(
+    savedUser.email,
+    'Verify your DownTimeMonitor account',
+    { name: savedUser.fullName, otp: otpCode },
+    'verify-account'
+  );
 
   return savedUser;
 };

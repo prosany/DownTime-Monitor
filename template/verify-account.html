@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+      rel="stylesheet"
+    />
+    <title>Verify Account</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        body {
+          font-family: 'Nunito', Arial, sans-serif;
+        }
+      }
+
+      body {
+        body {
+          font-family: 'Nunito', Arial, sans-serif;
+        }
+        background-color: #fffaf7;
+        width: 100%;
+      }
+
+      .container {
+        max-width: 650px;
+        margin: 2rem auto;
+        background: #fff;
+        padding: 50px;
+      }
+
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 8px;
+        font-size: 0.8rem;
+      }
+
+      .header > svg {
+        width: 35px;
+        height: 35px;
+      }
+
+      .description {
+        font-size: 0.7rem;
+      }
+
+      .main {
+        margin-top: 2rem;
+      }
+
+      .info-content {
+        margin-top: 1rem;
+      }
+
+      .main-otp {
+        font-size: 1rem;
+        font-weight: 600;
+        text-align: center;
+        padding: 0.8rem 1rem;
+        width: 70%;
+        margin: 1.5rem auto;
+        background-color: #f3f3f3;
+        color: #333;
+        border-radius: 5px;
+      }
+
+      .support-info {
+        margin-top: 1rem;
+        font-size: 0.9rem;
+      }
+
+      .footer {
+        margin-top: 2rem;
+        font-size: 0.79rem;
+        text-align: center;
+      }
+
+      .useful-links {
+        margin-top: 0.3rem;
+      }
+
+      .dot {
+        margin: 0 0.5rem;
+        color: #757575;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <svg
+          data-slot="icon"
+          fill="none"
+          stroke-width="1.5"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M15.042 21.672 13.684 16.6m0 0-2.51 2.225.569-9.47 5.227 7.917-3.286-.672Zm-7.518-.267A8.25 8.25 0 1 1 20.25 10.5M8.288 14.212A5.25 5.25 0 1 1 17.25 10.5"
+          ></path>
+        </svg>
+        <h1>DownTime Monitor</h1>
+      </div>
+      <p class="description">
+        Seamless API Monitoring for Uninterrupted Service!
+      </p>
+      <div class="main">
+        <h3>You are almost there!</h3>
+        <p class="info-content">
+          Hi, <span class="name">{{ name }}</span>!<br />
+          You're Just One Step Away from Unlocking the Power of Monitoring!
+          <br /><br />
+          Activate your account now to start effortlessly monitoring your API
+          endpoints. Enjoy real-time notifications, ensuring you're always
+          informed of any downtime, so you can take action before it impacts
+          your service.
+        </p>
+        <div class="main-otp">{{ otp }}</div>
+        <p class="support-info">
+          If you're experiencing any issues, please reach out to us. We are
+          ready to assist you and will respond promptly.
+          <a href="mailto:helpdesk@mahabubsany.com">helpdesk@mahabubsany.com</a>
+        </p>
+      </div>
+      <div class="footer">
+        <p>&copy; {{ year }} DownTime Monitor. All rights reserved.</p>
+        <p class="useful-links">
+          <a href="https://monitoring.mahabubsany.com" target="_blank"
+            >DownTime Monitor</a
+          >
+          <span class="dot">●</span>
+          <a href="https://github.com/prosany" target="_blank">Github</a>
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
