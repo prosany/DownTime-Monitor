@@ -5,6 +5,7 @@ const {
   updateUser,
   verifyUser,
   getUserById,
+  verifyAccount,
 } = require('@controllers/user.controllers');
 const { verifyToken } = require('@utils/jwt-helper');
 
@@ -17,5 +18,7 @@ router.patch('/update', verifyToken, updateUser);
 router.get('/verify-user', verifyToken, verifyUser);
 
 router.get('/get-user/:id', verifyToken, getUserById);
+
+router.get('/verify-account', verifyAccount);
 
 module.exports = router;

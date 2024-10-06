@@ -42,7 +42,7 @@ exports.sendEmail = async (to, subject, templateData, template) => {
   });
 
   const mailOptions = {
-    from: `"DownTimeMonitor" <${configs.EMAIL_USER}>`,
+    from: `"DownTime Monitor" <${configs.EMAIL_USER}>`,
     to: Array.isArray(to) ? to.join(', ') : to,
     subject,
     html: htmlContent,

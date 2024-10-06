@@ -157,3 +157,73 @@ exports.handleGetUserById = async (id, nextFunc) => {
 
   return user;
 };
+
+exports.handleVerifyAccount = async (otp, userId, nextFunc) => {
+  if (!otp || !userId) {
+    return nextFunc(createError(401, message('notEnoughData')));
+  }
+
+  // Check if OTP exists
+  const [otpData, userData] = await Promise.all([
+    Otp.findOne({
+      otp,
+      userId,
+    }),
+    User.findById(userId),
+  ]);
+
+  if (!otpData || !userData) {
+    return nextFunc(createError(401, message('notEnoughData')));
+  }
+
+  // Check if OTP is expired
+  const currentTime = new Date();
+  const otpExpireTime = new Date(otpData.expireAt);
+  if (currentTime > otpExpireTime) {
+    const [_deleteOtp, otpCode] = await Promise.all([
+      Otp.deleteOne({
+        otp,
+        userId,
+      }),
+      createOtp(6),
+    ]);
+
+    const draftOtp = new Otp({
+      userId: userData._id,
+      otp: otpCode,
+    });
+
+    draftOtp.save();
+
+    // Send email verification
+    sendEmail(
+      userData.email,
+      'Confirm your DownTimeMonitor account',
+      { name: userData.fullName, otp: otpCode, year: new Date().getFullYear() },
+      'verify-account'
+    );
+    return nextFunc(createError(401, message('otpExpired')));
+  }
+
+  // Verify account
+  const [user, _deleteOtp] = await Promise.all([
+    User.findByIdAndUpdate(
+      userId,
+      {
+        $set: {
+          isEmailVerified: true,
+        },
+      },
+      { new: true }
+    ),
+    Otp.deleteOne({
+      otp,
+      userId,
+    }),
+  ]);
+
+  return {
+    fullName: user.fullName,
+    email: user.email,
+  };
+};

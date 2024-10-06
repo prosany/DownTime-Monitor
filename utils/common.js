@@ -15,6 +15,9 @@ exports.message = (msg) => {
     unauthorized: 'You are not authorized to access this resource',
     invalidData: "You've entered invalid event data",
     eventLimitExceeded: 'You have exceeded the 5 event creation limit',
+    otpExpired: 'The OTP has expired, We have sent you a new OTP to your email',
+    otpMismatch: 'The OTP you entered is incorrect',
+    notEnoughData: 'Not enough data to process the request',
   };
 
   return messages[msg] || 'An error occurred';

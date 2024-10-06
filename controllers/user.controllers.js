@@ -6,6 +6,7 @@ const {
   handleUpdateUser,
   handleVerifyUser,
   handleGetUserById,
+  handleVerifyAccount,
 } = require('@services/user.service');
 
 exports.login = async (req, res, next) => {
@@ -87,5 +88,21 @@ exports.getUserById = async (req, res, next) => {
     });
   } catch (error) {
     next(createError(500, message('internalServerError')));
+  }
+};
+
+exports.verifyAccount = async (req, res, next) => {
+  try {
+    const { otp, userId } = req.query;
+
+    const user = await handleVerifyAccount(otp, userId, next);
+
+    res.status(200).send({
+      status: true,
+      message: 'Account verified successfully',
+      email: user.email,
+    });
+  } catch (error) {
+    return next(createError(500, message('internalServerError')));
   }
 };
